@@ -1,0 +1,24 @@
+.outerCont{
+    max-width: 100%;
+    min-height: 80vh;
+    padding: 1.5rem
+}
+
+.welcomeText{
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+.name{
+font-weight: bold;
+text-transform: capitalize;
+}
+
+.userProfileBtn{
+    padding: 1rem;
+    border-radius: 6px;
+    margin-top: 2rem;
+    cursor: pointer;
+    font-size: 1.3rem;
+    border: none;
+    margin-left: 2rem;
+}
