@@ -80,3 +80,123 @@ export const updateUserInDataBase=async(email,data,setIsloading)=>{
       console.log("Err: ", err);
     }
   };
+
+  export const getPoolUsers = async () => {
+    const colRef = collection(db, "poolUsers");
+    const docsSnap = await getDocs(colRef);
+    var result =[];
+    docsSnap.forEach(doc => {
+      result=[...result,doc.data()];
+    })
+
+    console.log("result", result[0])
+    return result;
+  };
+
+  export const getPoolUser = async (email) => {
+    //let User;
+    const docRef = doc(db, "poolUsers", email);
+    const docSnap = await getDoc(docRef);
+    //console.log(docSnap.data(), "docSnap");
+    return docSnap.data();
+  };
+
+  export const createPoolUser=async(email,data)=>{
+    try {
+      await setDoc(
+          doc(db, "poolUsers", email),data)       
+    } catch (error) {
+    console.log(error.message)
+    }
+  }
+
+  export const updatePoolUser=async(email,data,setIsloading)=>{
+    setIsloading(true)
+    const userDocumentRef=doc(db,"poolUsers",email)
+    
+    try {
+     
+      await updateDoc(userDocumentRef,{name:data.name,phone:data.phone}) 
+      toast.success("Successfully Updated")  
+      setIsloading(false)   
+    } catch (error) {
+      console.log(error.message)
+      toast.error("Something went wrong")
+      setIsloading(false) 
+    }
+  }
+  export const updatePoolUserGroup=async(email,data)=>{
+    // setIsloading(true)
+    const userDocumentRef=doc(db,"poolUsers",email)
+    
+    try {
+     
+      await updateDoc(userDocumentRef,{pools:[...data.pools]}) 
+      // toast.success("Successfully Updated")  
+      // setIsloading(false)   
+    } catch (error) {
+      console.log(error.message)
+      toast.error("Something went wrong")
+      // setIsloading(false) 
+    }
+  }
+
+  export const updatePoolUserTransaction=async(email,data)=>{
+    // setIsloading(true)
+    const userDocumentRef=doc(db,"poolUsers",email)
+    
+    try {
+     
+      await updateDoc(userDocumentRef,{transactions:[...data.transactions]}) 
+      // toast.success("Successfully Updated")  
+      // setIsloading(false)   
+    } catch (error) {
+      console.log(error.message)
+      toast.error("Something went wrong while updating the transaction of user")
+      // setIsloading(false) 
+    }
+  }
+
+  export const getPools = async () => {
+    const colRef = collection(db, "Pools");
+    const docsSnap = await getDocs(colRef);
+    var result =[];
+    docsSnap.forEach(doc => {
+      result=[...result,doc.data()];
+    })
+    return result;
+  };
+
+  export const getPool = async (id) => {
+    //let User;
+    const docRef = doc(db, "Pools", id);
+    const docSnap = await getDoc(docRef);
+    //console.log(docSnap.data(), "docSnap");
+    return docSnap.data();
+  };
+
+  export const createPool=async(id,data)=>{
+    try {
+      await setDoc(
+          doc(db, "Pools", id),data)       
+    } catch (error) {
+    console.log(error.message)
+    }
+  }
+
+  
+  export const updatePool=async(id,data,setIsloading)=>{
+    setIsloading(true)
+    
+    try {
+     
+      await setDoc(
+        doc(db, "Pools", id),data) 
+      // toast.success("Successfully Updated")  
+      setIsloading(false)   
+    } catch (error) {
+      console.log(error)
+      toast.error("Something went wrong while updating the pool")
+      setIsloading(false) 
+    }
+  }
