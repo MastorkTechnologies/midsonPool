@@ -14,7 +14,7 @@ const Dashboard = () => {
     <Navbar/>
     <section className={styles.outerCont}>
       <h1 className={styles.welcomeText}>Welcome <span className={styles.name}>{userData?.name}</span></h1>
-      <button onClick={()=>navigate("/editProfile")} className={styles.userProfileBtn}>Profile</button>
+     
       <Users/>
       <Pools/>
     </section>

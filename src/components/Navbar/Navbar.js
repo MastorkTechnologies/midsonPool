@@ -44,6 +44,7 @@ if(user.user){fetchdata(user.user.email)}
     <section className={styles.navbar}>
     <ToastContainer/>
        <h1 style={{cursor:"pointer"}} onClick={()=>navigate("/")}>Home</h1> 
+       <button onClick={()=>navigate("/editProfile")} className={styles.logout}>Profile</button>
        <button onClick={handleLogout} className={styles.logout}>Logout</button>
     </section>
   )

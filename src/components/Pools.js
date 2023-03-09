@@ -3,7 +3,8 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom'
 import { getPools, getPoolUsers } from '../firebase/config';
 import { Link } from "react-router-dom";
-
+import { Button } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css'
 const Pools = () => {
     const [pools, setPools] = useState([]);
     const [users, setUsers] = useState([]);
@@ -39,22 +40,34 @@ const Pools = () => {
 
   return (
     <>
-    <h1>Pools</h1>
+    <h3 style={{margin:"auto", marginTop:'2%', textAlign:"center"}}>POOLS</h3>
+    <div className="card" style={{width:"60%", margin:'auto', marginTop:"2%", marginBottom:'1%'}}>
+    <ul className="list-group list-group-flush">
     {pools.length>0 && pools.map((pool,idx)=>{
         return (
-            <>
-            <Link to={`/updatePool/${pool.id}`} state={{ state:pool }} >
-            <h3 style={{cursor:'pointer'}} key={pool.id} >{pool.poolAmount}</h3>
+           
+            <li className="list-group-item" >
+            <Link style={{textDecoration:'none', color:'black' , textAlign:'center'}} to={`/updatePool/${pool.id}`} state={{ state:pool }} >
+            <h4 style={{cursor:'pointer'}} key={pool.id} > Pool Amount ₹{(pool.poolAmount/pool.totalMonth)/pool.totalMonth} <span style={{color:'lightgray'}} > #{pool.id}</span> </h4>
             </Link>
+            <div className="card" style={{width:"60%", margin:'auto', marginTop:"2%", marginBottom:'1%'}}>
+            <ul className="list-group list-group-flush">
             {pool.usersAllData.map((user,idx)=>{
-              return(<p key={user.email}>{user.name}</p>)
+              return(
+              <li className="list-group-item" >
+                <p style={{ textTransform:'capitalize'}} key={user.email}>{user.name}</p>
+              </li>
+              )
               
             })}
-            </>
+            </ul>
+            </div>
+            </li>
         )
     })}
-
-    <button onClick={()=>navigate("/createPool")} >ADD NEW POOL</button>
+     </ul>
+    </div>
+    <Button className='btn-dark' style={{margin:'auto',display:'flex', justifyContent:'center' }} onClick={()=>navigate("/createPool")} >ADD NEW POOL</Button>
     </>
   )
 }

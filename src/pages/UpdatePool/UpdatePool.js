@@ -2,16 +2,20 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Navbar from '../../components/Navbar/Navbar'
 import { toast } from 'react-toastify';
-import { getPool, getPoolUser, getPoolUsers, updatePool, updatePoolUser, updatePoolUserTransaction } from '../../firebase/config';
+import { getPool, getPoolUser, getPoolUsers, updatePool, updatePoolUser, updatePoolUserDues, updatePoolUserTransaction } from '../../firebase/config';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import { useLocation } from 'react-router-dom';
+import { Button, Form , Table } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css'
+import { current } from '@reduxjs/toolkit';
 
 const animatedComponents = makeAnimated();
 
 const UpdatePool = () => {
   // const [name, setName] = useState();
   const [startingDate, setStartingDate] = useState();
+  const [currentMonth, setCurrentMonth] = useState();
   const [poolAmount, setPoolAmount] = useState();
   const [isloading,setIsloading] = useState(false); 
   const [pool, setPool] = useState();
@@ -53,11 +57,12 @@ const UpdatePool = () => {
   
   const submitHandler = (e)=>{
     e.preventDefault();
-
+    navigate("/dashboard");
   }
   const setForm = (data)=>{
     // setName(data.name);
     setPool(data);
+    setCurrentMonth(data.currentMonth);
     setStartingDate(data.startingDate);
     setPoolAmount(data.poolAmount);
     getprizedUserDetails(data);
@@ -67,13 +72,25 @@ const UpdatePool = () => {
     getduepayments(data);
     gettransactions(data)
   }
+  const updateForm = ()=>{
+    // setName(data.name);
+    // setPool(data);
+    setStartingDate(pool.startingDate);
+    setPoolAmount(pool.poolAmount);
+    getprizedUserDetails(pool);
+    getnonprizedUserDetails(pool);
+    getprizedNotPaidUserDetails(pool);
+    getnonprizedfinanceUserDetails(pool);
+    getduepayments(pool);
+    gettransactions(pool)
+  }
 
   const getprizedUserDetails = (data)=>{
     if(data?.prizedUsers.length>0){
       data.prizedUsers.map((item,idx)=>{
         data.usersAllData.map((user, idx2)=>{
           if(item.email == user.email){
-            setPrizedUserDetails([...prizedUserDetails, {email:item.email, amount:item.amount, name:user.name}])
+            setPrizedUserDetails((prizedUserDetails)=>[...prizedUserDetails, {email:item.email, amount:item.amount, name:user.name}])
           }
         })
       })
@@ -84,7 +101,7 @@ const UpdatePool = () => {
       data.nonPrizedUsers.map((item,idx)=>{
         data.usersAllData.map((user, idx2)=>{
           if(item.email == user.email){
-            setNonPrizedUserDetails([...nonPrizedUserDetails, {email:item.email, name:user.name}])
+            setNonPrizedUserDetails((nonPrizedUserDetails)=> [...nonPrizedUserDetails, {email:item.email, name:user.name}])
           }
         })
       })
@@ -95,7 +112,7 @@ const UpdatePool = () => {
       data.prizedNotPaidUsers.map((item,idx)=>{
         data.usersAllData.map((user, idx2)=>{
           if(item.email == user.email){
-            setPrizedNotPaidUsersDetails([...prizedNotPaidUsersDetails, {email:item.email, amount:item.amount, name:user.name}])
+            setPrizedNotPaidUsersDetails((prizedNotPaidUsersDetails)=> [...prizedNotPaidUsersDetails, {email:item.email, amount:item.amount, name:user.name}])
           }
         })
       })
@@ -106,7 +123,7 @@ const UpdatePool = () => {
       data.nonPrizedFinanceUsers.map((item,idx)=>{
         data.usersAllData.map((user, idx2)=>{
           if(item.email == user.email){
-            setNonPrizedFinanceUserDetails([...nonPrizedFinanceUserDetails, {email:item.email, amount:item.amount, name:user.name}])
+            setNonPrizedFinanceUserDetails((nonPrizedFinanceUserDetails)=> [...nonPrizedFinanceUserDetails, {email:item.email, amount:item.amount, name:user.name}])
           }
         })
       })
@@ -129,7 +146,7 @@ const UpdatePool = () => {
       data.transactions.map((item,idx)=>{
         data.usersAllData.map((user, idx2)=>{
           if(item.email == user.email){
-            setTransactions([...transactions, {email:item.email, amount:item.amount, name:user.name, status:item.status, date:item.date}])
+            setTransactions((transactions)=>[...transactions, {desc:item.desc ,email:item.email, amount:item.amount, name:user.name, status:item.status, date:item.date}])
           }
         })
       })
@@ -179,11 +196,13 @@ const UpdatePool = () => {
     var netPay = monthlyPay-amountRec;
     console.log(netPay, typeof(netPay))
     pool.users.map((user,idx)=>{
-      setPool(pool.duePayments=[...pool.duePayments,{email:user, Amount:netPay, Paid:false}])
+      setPool(pool.duePayments=[...pool.duePayments,{email:user, Amount:netPay, Paid:false, date:d}])
+      updatePoolUserDues(user, {pool:pool.id, Amount:netPay, Paid:false, date:d})
     })
     
     var tempPool = pool;
     delete tempPool.usersAllData;
+    // updateForm();
     updatePool(pool.id,tempPool, setIsloading)
     toast.success("updated prized user successfully")
     setShowPrizedNotPaidForm(false)
@@ -234,19 +253,22 @@ const UpdatePool = () => {
     var netPay = monthlyPay-amountRec;
     console.log(netPay, typeof(netPay))
     pool.users.map((user,idx)=>{
-      setPool(pool.duePayments=[...pool.duePayments,{email:user, Amount:netPay, Paid:false}])
+      setPool(pool.duePayments=[...pool.duePayments,{email:user, Amount:netPay, Paid:false, date:d}])
+      updatePoolUserDues(user, {pool:pool.id, Amount:netPay, Paid:false, date:d})
     })
 
-    setPool(pool.transactions=[...pool.transactions, {email:selectedPrizedUsers[0], amount:bidding, status:"debit", date:d}])
-    updatePoolUserTransaction(selectedPrizedUsers[0],  {pool:pool.id, amount:bidding, status:"credit",date:d})
+    setPool(pool.transactions=[...pool.transactions, {email:selectedPrizedUsers[0], amount:bidding, status:"debit", date:d, desc:`send prized money to ${selectedPrizedUsers[0]}`}])
+    updatePoolUserTransaction(selectedPrizedUsers[0],  {pool:pool.id, amount:bidding, status:"credit",date:d, desc:`Received prized money from pool: ${pool.id}`})
     
     var tempPool = pool;
     delete tempPool.usersAllData;
+    // updateForm();
     updatePool(pool.id,tempPool, setIsloading)
     toast.success("updated prized user successfully")
     setShowPrizedForm(false)
     setTimeout(resetForm, 3500);
   }
+
   const updateNonPrizedFinanceUsers = ()=>{
     if(bidding==undefined||bidding==""||bidding==null||selectedNonPrizedFinanceUsers==0){
       return toast.error("Bidding Amount or Prized User list cannot be empty!")
@@ -267,16 +289,17 @@ const UpdatePool = () => {
       var month = date.getMonth();
       month +=1;
       var d =`${year}-${month}-${day}`
-    setPool(pool.prizedUsers=[...pool.prizedUsers,{email:selectedNonPrizedFinanceUsers[0],date:d,amount:bidding}])
+    setPool(pool.nonPrizedUsers=[...pool.nonPrizedUsers,{email:selectedNonPrizedFinanceUsers[0],date:d,amount:bidding}])
    
+    updatePoolUserDues(selectedNonPrizedFinanceUsers[0], {pool:pool.id, Amount:bidding, Paid:false, date:d})
+    setPool(pool.duePayments=[...pool.duePayments,{email:selectedNonPrizedFinanceUsers, Amount:bidding, Paid:false, date:d}])
 
-    setPool(pool.duePayments=[...pool.duePayments,{email:selectedNonPrizedFinanceUsers, Amount:bidding, Paid:false}])
-
-    setPool(pool.transactions=[...pool.transactions, {email:selectedNonPrizedFinanceUsers[0], amount:bidding, status:"debit", date:d}])
-    updatePoolUserTransaction(selectedNonPrizedFinanceUsers[0],  {pool:pool.id, amount:bidding, status:"credit",date:d})
+    setPool(pool.transactions=[...pool.transactions, {email:selectedNonPrizedFinanceUsers[0], amount:bidding, status:"debit", date:d, desc:`Financed money to ${selectedNonPrizedFinanceUsers[0]}`}])
+    updatePoolUserTransaction(selectedNonPrizedFinanceUsers[0],  {pool:pool.id, amount:bidding, status:"credit",date:d, desc:"Received Fiananced Money"})
     
     var tempPool = pool;
     delete tempPool.usersAllData;
+    // updateForm();
     updatePool(pool.id,tempPool, setIsloading)
     toast.success("updated prized user successfully")
     setShowNonPrizedFinanceForm(false)
@@ -285,47 +308,67 @@ const UpdatePool = () => {
   return (
   <>
     <Navbar/>
-    <h1>Pool Details</h1>
-    <form onSubmit={(e)=>submitHandler(e)}>
-        <label>
+    <h3 style={{margin:"auto", textAlign:"center", marginTop:'2%', textTransform:'uppercase'}}>Pool Details</h3>
+    <div className="card" style={{width:"60%", margin:'auto', marginTop:"2%", marginBottom:'1%', padding:'2% 8%'}}>
+    <Form  onSubmit={(e)=>submitHandler(e)}>
+      <Form.Group className="mb-3">
+        <Form.Label>
           Pool Amount:
-          <input type="text" value={poolAmount} disabled={true} />
-        </label>
-       
-        <label>
+          <Form.Control type="text" value={poolAmount} disabled={true} />
+        </Form.Label>
+        </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>
           Starting Date:
-          <input type="text" value={startingDate} disabled={true}/>
-        </label>
-        <br></br>
-        <label>
+          <Form.Control type="text" value={startingDate} disabled={true}/>
+        </Form.Label>
+        </Form.Group>
+        <Form.Group className="mb-3">
+        <Form.Label>
+          Current Month:
+          <Form.Control type="text" value={currentMonth} disabled={true}/>
+        </Form.Label>
+        </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>
           users:
-          {pool?.usersAllData?.map((user,idx)=>{
-            return(
-              <p key={user.email} >{user.name}</p>
-            )
-          })}
-        </label>
-        {
-          !showPrizedForm?
-          <label>
-            Prized users:
-            {pool?.prizedUsers.length >0?
-           
-              prizedUserDetails.map((item,idx2)=>{
-               
-                return(
-                  <p key={item.email} >{item.name} {item.amount}</p>
-                )
+          <div className="card" style={{ margin:'auto', marginTop:"2%", marginBottom:'1%'}}>
+            <ul className="list-group list-group-flush">
+            {pool && pool.usersAllData.length>0 && pool.usersAllData.map((user,idx)=>{
+              return (
+                <li style={{width:"220px"}} className="list-group-item"> <p  style={{cursor:'pointer', textTransform:'capitalize'}} key={user.email} >{user.name} </p></li>
+              )
+            })}
+            </ul>
+          </div>
+        </Form.Label>
+        </Form.Group>
+        {!showPrizedForm?
+        <Form.Group className="mb-3">
+        <Form.Label>
+          Prized users:
+          <div className="card" style={{ margin:'auto', marginTop:"2%", marginBottom:'1%'}}>
+            <ul className="list-group list-group-flush">
+            {prizedUserDetails && prizedUserDetails.length>0 ? prizedUserDetails.map((item,idx2)=>{
+              if(idx2<prizedUserDetails.length/2)
+              return (
+                <li style={{width:"220px"}} className="list-group-item"> <p  style={{cursor:'pointer', textTransform:'capitalize'}} key={`${item.email} pu`} >{item.name} {item.amount} </p></li>
+              )
             }):
-            <p>No prized users yet</p>
-            } 
-            <br></br>
-            <button onClick={()=>setShowPrizedForm(true)} >ADD Prized User</button>
-          </label>
-          :
-          <>
-          <label>
+            <li style={{width:"220px"}} className="list-group-item"> <p> No prized users yet</p></li>
+            }
+            </ul>
+            <Button className='btn-light' onClick={()=>setShowPrizedForm(true)} >ADD Prized User</Button>
+          </div>
+        </Form.Label>
+        </Form.Group>
+        :
+        <>
+        <h5>Add Prized User</h5>
+        <Form.Group className="mb-3">
+          <Form.Label>
             users:
+          
             <Select
               closeMenuOnSelect={false}
               components={animatedComponents}
@@ -335,51 +378,62 @@ const UpdatePool = () => {
               isMulti
               options={options}
             />
-          </label>
-          <label>
+          </Form.Label>
+          </Form.Group>
+          <Form.Group className="mb-3">
+          <Form.Label>
             Bidding Amount:
-            <input type="text" value={bidding} onChange={(e)=>setBidding(e.target.value)} />
-          </label>
-          <button onClick={()=>setShowPrizedForm(false)} >Back</button>
-          <button onClick={()=>updatePrizedUsers()} >Update</button>
-          </>
+            <Form.Control type="text" value={bidding} onChange={(e)=>setBidding(e.target.value)} />
+          </Form.Label>
+          <Button onClick={()=>setShowPrizedForm(false)} >Back</Button>
+          <Button onClick={()=>updatePrizedUsers()} >ADD</Button>
+        </Form.Group>
+        </>
         }
-        <br></br>
-        <label>
-            Non Prized users:
-            {nonPrizedUserDetails.length >0?
-           
-              nonPrizedUserDetails.map((item,idx2)=>{
-               
-                return(
-                  <p key={item.email} >{item.name}</p>
-                )
+        <Form.Group className="mb-3">
+        <Form.Label>
+          Non Prized users:
+          <div className="card" style={{ margin:'auto', marginTop:"2%", marginBottom:'1%'}}>
+            <ul className="list-group list-group-flush">
+            {nonPrizedUserDetails && nonPrizedUserDetails.length>0 ? nonPrizedUserDetails.map((item,idx2)=>{
+              if(idx2<nonPrizedUserDetails.length/2)
+              return (
+                <li style={{width:"220px"}} className="list-group-item"> <p  style={{cursor:'pointer', textTransform:'capitalize'}} key={`${item.email} npu`} >{item.name}</p></li>
+              )
             }):
-            <p>No Non prized users </p>
-            } 
-          </label>
-          
-          {
-            !showPrizedNotPaidForm?
-            <label>
-            Prized Not Paid users:
-            {prizedNotPaidUsersDetails.length >0?
-           
-              prizedNotPaidUsersDetails.map((item,idx2)=>{
-               
-                return(
-                  <p key={item.email} >{item.name} {item.amount}</p>
-                )
-            }):
-            <p>No Prized Not Paid users</p>
+            <li style={{width:"220px"}} className="list-group-item"> <p> No Non prized users</p></li>
             }
-            <button onClick={()=>setShowPrizedNotPaidForm(true)} >ADD Prized Not Paid User</button>
-            </label>
-            :
-            <>
-            <label>
-              users:
-              <Select
+            </ul>
+          </div>
+        </Form.Label>
+        </Form.Group>
+        {!showPrizedNotPaidForm?
+        <Form.Group className="mb-3">
+        <Form.Label>
+          Prized Not Paid users:
+          <div className="card" style={{ margin:'auto', marginTop:"2%", marginBottom:'1%'}}>
+            <ul className="list-group list-group-flush">
+            {prizedNotPaidUsersDetails && prizedNotPaidUsersDetails.length>0 ? prizedNotPaidUsersDetails.map((item,idx2)=>{
+              if(idx2<prizedNotPaidUsersDetails.length/2)
+              return (
+                <li style={{width:"220px"}} className="list-group-item"> <p  style={{cursor:'pointer', textTransform:'capitalize'}} key={`${item.email} pnpu`} >{item.name} {item.amount} </p></li>
+              )
+            }):
+            <li style={{width:"220px"}} className="list-group-item"> <p> No Prized Not Paid users</p></li>
+            }
+            </ul>
+            <Button className='btn-light' onClick={()=>setShowPrizedNotPaidForm(true)} >ADD Prized Not Paid User</Button>
+          </div>
+        </Form.Label>
+        </Form.Group>
+        :
+        <>
+        <h5>ADD Prized Not Paid User</h5>
+        <Form.Group className="mb-3">
+          <Form.Label>
+            users:
+          
+            <Select
                 closeMenuOnSelect={false}
                 components={animatedComponents}
                 onChange={(selected)=> selected.map((item, idx)=>{
@@ -388,37 +442,45 @@ const UpdatePool = () => {
                 isMulti
                 options={options}
               />
-            </label>
-            <label>
-              Bidding Amount:
-              <input type="text" value={bidding} onChange={(e)=>setBidding(e.target.value)} />
-            </label>
-            <button onClick={()=>setShowPrizedNotPaidForm(false)} >Back</button>
-            <button onClick={()=>updatePrizedNotPaidUsers()} >Update</button>
-            </>
-          }
-          <br></br>
-          {
-            !showNonPrizedFinanceForm?
-            <label>
-            Non Prized Finance users:
-            {nonPrizedFinanceUserDetails.length >0?
-           
-              nonPrizedFinanceUserDetails.map((item,idx2)=>{
-               
-                return(
-                  <p key={item.email} >{item.name} {item.amount}</p>
-                )
+          </Form.Label>
+          </Form.Group>
+          <Form.Group className="mb-3">
+          <Form.Label>
+            Bidding Amount:
+            <Form.Control type="text" value={bidding} onChange={(e)=>setBidding(e.target.value)} />
+          </Form.Label>
+          <Button onClick={()=>setShowPrizedNotPaidForm(false)} >Back</Button>
+          <Button onClick={()=>updatePrizedNotPaidUsers()} >ADD</Button>
+        </Form.Group>
+        </>
+        }
+        {!showNonPrizedFinanceForm?
+        <Form.Group className="mb-3">
+        <Form.Label>
+          Non Prized Finance users:
+          <div className="card" style={{ margin:'auto', marginTop:"2%", marginBottom:'1%'}}>
+            <ul className="list-group list-group-flush">
+            {nonPrizedFinanceUserDetails && nonPrizedFinanceUserDetails.length>0 ? nonPrizedFinanceUserDetails.map((item,idx2)=>{
+              if(idx2<nonPrizedFinanceUserDetails.length/2)
+              return (
+                <li style={{width:"220px"}} className="list-group-item"> <p  style={{cursor:'pointer', textTransform:'capitalize'}} key={`${item.email} npfu`} >{item.name} {item.amount} </p></li>
+              )
             }):
-            <p>No Non Prized Finance users</p>
+            <li style={{width:"220px"}} className="list-group-item"> <p> No Non Prized Finance users</p></li>
             }
-            <button onClick={()=>setShowNonPrizedFinanceForm(true)} >ADD NON Prized Finance User</button>
-            </label>
-            :
-            <>
-            <label>
-              users:
-              <Select
+            </ul>
+            <Button className='btn-light' onClick={()=>setShowNonPrizedFinanceForm(true)} >ADD Prized Not Paid User</Button>
+          </div>
+        </Form.Label>
+        </Form.Group>
+        :
+        <>
+        <h5>ADD NON Prized Finance User</h5>
+        <Form.Group className="mb-3">
+          <Form.Label>
+            users:
+          
+            <Select
                 closeMenuOnSelect={false}
                 components={animatedComponents}
                 onChange={(selected)=> selected.map((item, idx)=>{
@@ -427,46 +489,84 @@ const UpdatePool = () => {
                 isMulti
                 options={options}
               />
-            </label>
-            <label>
-              Amount:
-              <input type="text" value={bidding} onChange={(e)=>setBidding(e.target.value)} />
-            </label>
-            <button onClick={()=>setShowNonPrizedFinanceForm(false)} >Back</button>
-            <button onClick={()=>updateNonPrizedFinanceUsers()} >Update</button>
-            </>
-          }
-            <br></br>
-            <label>
-            Due Payments:
-            {duePayments.length >0?
-           
-              duePayments.map((item,idx2)=>{
-                if(idx2<duePayments.length/2)
-                return(
-                  <p key={item.email} >{item.name} {item.amount} {item.paid?"":"not"} paid </p>
-                )
-            }):
-            <p>No Due Payments</p>
-            }
-            {/* <button onClick={()=>setShowNonPrizedFinanceForm(true)} >ADD NON Prized Finance User</button> */}
-            </label>
-            <label>
-            Transactions:
-            {transactions.length >0?
-           
-              transactions.map((item,idx2)=>{
-               
-                return(
-                  <p key={item.email} >{item.date} {item.name} {item.amount} {item.status}  </p>
-                )
-            }):
-            <p>No Transactions yet</p>
-            }
-            {/* <button onClick={()=>setShowNonPrizedFinanceForm(true)} >ADD NON Prized Finance User</button> */}
-            </label>
-        {/* <input type="submit" value="Submit" disabled={isloading} /> */}
-      </form>
+          </Form.Label>
+          </Form.Group>
+          <Form.Group className="mb-3">
+          <Form.Label>
+            Bidding Amount:
+            <Form.Control type="text" value={bidding} onChange={(e)=>setBidding(e.target.value)} />
+          </Form.Label>
+          <Button onClick={()=>setShowNonPrizedFinanceForm(false)} >Back</Button>
+          <Button onClick={()=>updateNonPrizedFinanceUsers()} >ADD</Button>
+        </Form.Group>
+        </>
+        }
+        
+        <Button type="submit" value="Submit"  > Save </Button>
+      </Form >
+      </div>
+      <div className="card" style={{width:"60%", margin:'auto', marginTop:"2%", marginBottom:'1%', padding:'2% 8%'}}>
+        <h4>Due Payments</h4>
+        <Table striped bordered hover>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {duePayments && duePayments.length> 0 && 
+          duePayments.map((payment, idx2)=>{
+            console.log(payment)
+            if(idx2<duePayments.length/2)
+            return(
+              <tr key={`${Math.floor(Math.random() * 1092)}`}>
+              <td>{idx2}</td>
+              <td>{payment.name}</td>
+              <td>{payment.amount}</td>
+            </tr>
+            )
+          })
+        }
+        
+      </tbody>
+    </Table>
+      </div>
+      <div className="card" style={{width:"60%", margin:'auto', marginTop:"2%", marginBottom:'1%', padding:'2% 8%'}}>
+        <h4>Transactions</h4>
+        <Table striped bordered hover>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Description</th>
+          <th>Name</th>
+          <th>Date</th>
+          <th>Amount</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {transactions && transactions.length> 0 && 
+          transactions.map((payment, idx)=>{
+            console.log(payment)
+            if(idx<transactions.length/2)
+            return(
+              <tr>
+              <td>{idx}</td>
+              <td>{payment.desc}</td>
+              <td>{payment.name}</td>
+              <td>{payment.date}</td>
+              <td>{payment.amount}</td>
+              <td>{payment.status}</td>
+            </tr>
+            )
+          })
+        }
+        
+      </tbody>
+    </Table>
+      </div>
   </>
   )
 }

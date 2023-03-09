@@ -5,6 +5,8 @@ import { toast } from 'react-toastify';
 import { createPool, createPoolUser, getPoolUsers, updatePoolUserGroup } from '../../firebase/config';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
+import { Button, Form  } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 const animatedComponents = makeAnimated();
 
@@ -104,15 +106,18 @@ const CreatePool = () => {
   return (
   <>
     <Navbar/>
-    <h1>Create pool</h1>
-    <form onSubmit={(e)=>submitHandler(e)}>
-        <label>
-          Pool Amount:
-          <input type="text" value={poolAmount} onChange={(e)=>setPoolAmount(e.target.value)} />
-        </label>
-       
-        <label>
-          users:
+    <h3 style={{margin:"auto", textAlign:"center", marginTop:'2%', textTransform:'uppercase'}}>ADD NEW POOL</h3>
+    <div className="card" style={{width:"60%", margin:'auto', marginTop:"2%", marginBottom:'1%', padding:'2% 8%'}}>
+    <Form  onSubmit={(e)=>submitHandler(e)}>
+      <Form.Group className="mb-3">
+        <Form.Label>
+        Pool Amount:
+          <Form.Control type="text" value={poolAmount} onChange={(e)=>setPoolAmount(e.target.value)} />
+        </Form.Label>
+        </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>
+        Users:
           <Select
             closeMenuOnSelect={false}
             components={animatedComponents}
@@ -122,14 +127,17 @@ const CreatePool = () => {
             isMulti
             options={options}
           />
-        </label>
-       
-        <label>
+        </Form.Label>
+        </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>
           Starting Date:
-          <input type="date" value={startingDate} onChange={(e)=>setStartingDate(e.target.value)} />
-        </label>
-        <input type="submit" value="Submit" />
-      </form>
+          <Form.Control type="text" value={startingDate} onChange={(e)=>setStartingDate(e.target.value)}/>
+        </Form.Label>
+        </Form.Group>
+        <Button type="submit" value="Submit" > ADD </Button>
+      </Form >
+      </div>
   </>
   )
 }

@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import Navbar from '../../components/Navbar/Navbar'
 import { toast } from 'react-toastify';
 import { createPoolUser } from '../../firebase/config';
-
+import { Button , Form } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css'
 const CreateUser = () => {
   const [name, setName] = useState();
   const [email, setEmail] = useState();
@@ -20,6 +21,7 @@ const CreateUser = () => {
         email,
         phone,
         pools:[],
+        duePayments:[],
         transactions:[]
     }
     createPoolUser(email, data)
@@ -31,28 +33,36 @@ const CreateUser = () => {
     setName("");
     setEmail("");
     setPhone("");
+    setTimeout(()=>window.location.reload(), 1500);
   }
   return (
   <>
     <Navbar/>
-    <h1>Create user</h1>
-    <form onSubmit={(e)=>submitHandler(e)}>
-        <label>
+    <h3 style={{margin:"auto", textAlign:"center"}}>ADD USERS</h3>
+    <div className="card" style={{width:"60%", margin:'auto', marginTop:"2%", marginBottom:'1%', padding:'2% 8%'}}>
+    <Form  onSubmit={(e)=>submitHandler(e)}>
+      <Form.Group className="mb-3">
+        <Form.Label>
           Name:
-          <input type="text" value={name} onChange={(e)=>setName(e.target.value)} />
-        </label>
-       
-        <label>
+          <Form.Control type="text" value={name} onChange={(e)=>setName(e.target.value)} />
+        </Form.Label>
+        </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>
           Email:
-          <input type="text" value={email} onChange={(e)=>setEmail(e.target.value)} />
-        </label>
-       
-        <label>
+          <Form.Control type="text" value={email} onChange={(e)=>setEmail(e.target.value)} />
+        </Form.Label>
+        </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>
           Phone:
-          <input type="text" value={phone} onChange={(e)=>setPhone(e.target.value)} />
-        </label>
-        <input type="submit" value="Submit" />
-      </form>
+          <Form.Control type="text" value={phone} onChange={(e)=>setPhone(e.target.value)} />
+        </Form.Label>
+        </Form.Group>
+        <Button type="submit" value="Submit"> ADD </Button>
+      </Form >
+      </div>
+
   </>
   )
 }
