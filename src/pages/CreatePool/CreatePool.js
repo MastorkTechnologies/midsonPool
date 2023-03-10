@@ -132,7 +132,7 @@ const CreatePool = () => {
       <Form.Group className="mb-3">
         <Form.Label>
           Starting Date:
-          <Form.Control type="text" value={startingDate} onChange={(e)=>setStartingDate(e.target.value)}/>
+          <Form.Control type="date" value={startingDate} onChange={(e)=>setStartingDate(e.target.value)}/>
         </Form.Label>
         </Form.Group>
         <Button type="submit" value="Submit" > ADD </Button>

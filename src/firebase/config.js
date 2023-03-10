@@ -177,6 +177,31 @@ export const updateUserInDataBase=async(email,data,setIsloading)=>{
       // setIsloading(false) 
     }
   }
+  export const updatePoolUserDuesold=async(email,data)=>{
+    // setIsloading(true)
+    const userDocumentRef=doc(db,"poolUsers",email)
+    const docRef = doc(db, "poolUsers", email);
+    const docSnap = await getDoc(docRef);
+    const userdata = docSnap.data();
+    var i;
+    var temparr=[];
+    for(i =0; i<userdata.duePayments.length; i++){
+      if(data.Amount != userdata.duePayments[i].Amount || data.pool != userdata.duePayments[i].pool || data.date != userdata.duePayments[i].date){
+        temparr = [...temparr, userdata.duePayments[i]]
+      }
+    }   
+    
+    try {
+     
+      await updateDoc(userDocumentRef,{duePayments:[...temparr]}) 
+      // toast.success("Successfully Updated")  
+      // setIsloading(false)   
+    } catch (error) {
+      console.log(error.message)
+      toast.error("Something went wrong while updating the dues of user")
+      // setIsloading(false) 
+    }
+  }
 
   export const getPools = async () => {
     const colRef = collection(db, "Pools");

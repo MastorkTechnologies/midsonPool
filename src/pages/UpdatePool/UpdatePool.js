@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Navbar from '../../components/Navbar/Navbar'
 import { toast } from 'react-toastify';
-import { getPool, getPoolUser, getPoolUsers, updatePool, updatePoolUser, updatePoolUserDues, updatePoolUserTransaction } from '../../firebase/config';
+import { getPool, getPoolUser, getPoolUsers,updatePoolUserDuesold, updatePool, updatePoolUser, updatePoolUserDues, updatePoolUserTransaction } from '../../firebase/config';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import { useLocation } from 'react-router-dom';
 import { Button, Form , Table } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { current } from '@reduxjs/toolkit';
+import ReactSwitch from 'react-switch';
 
 const animatedComponents = makeAnimated();
 
@@ -32,6 +33,8 @@ const UpdatePool = () => {
   const [nonPrizedFinanceUserDetails, setNonPrizedFinanceUserDetails] = useState([]);
   const [duePayments, setDuePayments] = useState([]);
   const [transactions, setTransactions] = useState([]);
+  const [paidVal, setPaidVal] = useState([]);
+  const [indexes, setIndexes] = useState([]);
   const params = useParams();
   const navigate=useNavigate()
   let { state } = useLocation();
@@ -134,7 +137,7 @@ const UpdatePool = () => {
       data.duePayments.map((item,idx)=>{
         data.usersAllData.map((user, idx2)=>{
           if(item.email == user.email){
-            setDuePayments((duepay)=> [...duepay, {email:item.email, amount:item.Amount, name:user.name, paid:item.Paid}])
+            setDuePayments((duepay)=> [...duepay, {email:item.email, amount:item.amount, date:item.date, name:user.name, paid:item.paid}])
           }
         })
       })
@@ -196,7 +199,7 @@ const UpdatePool = () => {
     var netPay = monthlyPay-amountRec;
     console.log(netPay, typeof(netPay))
     pool.users.map((user,idx)=>{
-      setPool(pool.duePayments=[...pool.duePayments,{email:user, Amount:netPay, Paid:false, date:d}])
+      setPool(pool.duePayments=[...pool.duePayments,{email:user, amount:netPay, paid:false, date:d}])
       updatePoolUserDues(user, {pool:pool.id, Amount:netPay, Paid:false, date:d})
     })
     
@@ -253,7 +256,7 @@ const UpdatePool = () => {
     var netPay = monthlyPay-amountRec;
     console.log(netPay, typeof(netPay))
     pool.users.map((user,idx)=>{
-      setPool(pool.duePayments=[...pool.duePayments,{email:user, Amount:netPay, Paid:false, date:d}])
+      setPool(pool.duePayments=[...pool.duePayments,{email:user, amount:netPay, paid:false, date:d}])
       updatePoolUserDues(user, {pool:pool.id, Amount:netPay, Paid:false, date:d})
     })
 
@@ -292,7 +295,7 @@ const UpdatePool = () => {
     setPool(pool.nonPrizedUsers=[...pool.nonPrizedUsers,{email:selectedNonPrizedFinanceUsers[0],date:d,amount:bidding}])
    
     updatePoolUserDues(selectedNonPrizedFinanceUsers[0], {pool:pool.id, Amount:bidding, Paid:false, date:d})
-    setPool(pool.duePayments=[...pool.duePayments,{email:selectedNonPrizedFinanceUsers, Amount:bidding, Paid:false, date:d}])
+    setPool(pool.duePayments=[...pool.duePayments,{email:selectedNonPrizedFinanceUsers, amount:bidding, paid:false, date:d}])
 
     setPool(pool.transactions=[...pool.transactions, {email:selectedNonPrizedFinanceUsers[0], amount:bidding, status:"debit", date:d, desc:`Financed money to ${selectedNonPrizedFinanceUsers[0]}`}])
     updatePoolUserTransaction(selectedNonPrizedFinanceUsers[0],  {pool:pool.id, amount:bidding, status:"credit",date:d, desc:"Received Fiananced Money"})
@@ -304,6 +307,53 @@ const UpdatePool = () => {
     toast.success("updated prized user successfully")
     setShowNonPrizedFinanceForm(false)
     setTimeout(resetForm, 3500);
+  }
+  const handleChangeDT = (val,index)=>{
+    setPaidVal((prev)=>[...prev, val])
+    setIndexes((prev)=>[...prev, index])
+    console.log(val, index);
+    var temp = [];
+    duePayments.map((item, idx)=>{
+      if(idx<duePayments.length/2){
+        temp[idx] = item;
+        if(idx == index){
+          temp[idx].paid = val;
+        }
+      }
+    })
+    console.log(duePayments[0])
+    setDuePayments([...temp,...temp])
+    delete temp.name;
+    var pooltemp = pool;
+    pooltemp.duePayments = temp;
+    console.log(pooltemp)
+    setPool(pooltemp)
+  }
+  const handleUpdateDP = ()=>{
+    var date = new Date();
+    var year = date.getFullYear();
+    var day = date.getDate();
+    var month = date.getMonth();
+    month +=1;
+    var d =`${year}-${month}-${day}`
+    console.log(pool)
+    var totalamt = 0;
+    indexes.map((idx)=>{
+      updatePoolUserDuesold(duePayments[idx].email, {pool:pool.id, Amount:duePayments[idx].amount, Paid:true, date:duePayments[idx].date})
+      totalamt += duePayments[idx].amount;
+      setPool(pool.transactions=[...pool.transactions, {email:duePayments[idx].email, amount:duePayments[idx].amount, status:"credit", date:d, desc:`Recieved Money from ${duePayments[idx].email}`}])
+      updatePoolUserTransaction(duePayments[idx].email,  {pool:pool.id, amount:duePayments[idx].amount, status:"debit",date:d, desc:"Send Money to Pool"})
+    })
+    
+      var tempPool = pool;
+      delete tempPool.usersAllData;
+      console.log(tempPool)
+       tempPool.balance = tempPool.balance + totalamt;
+      // updateForm();
+      updatePool(pool.id,tempPool, setIsloading)
+      toast.success("updated due payments")
+      setTimeout(()=>navigate("/dashboard"), 2000);
+    
   }
   return (
   <>
@@ -334,7 +384,7 @@ const UpdatePool = () => {
           users:
           <div className="card" style={{ margin:'auto', marginTop:"2%", marginBottom:'1%'}}>
             <ul className="list-group list-group-flush">
-            {pool && pool.usersAllData.length>0 && pool.usersAllData.map((user,idx)=>{
+            {pool && pool.usersAllData?.length>0 && pool.usersAllData.map((user,idx)=>{
               return (
                 <li style={{width:"220px"}} className="list-group-item"> <p  style={{cursor:'pointer', textTransform:'capitalize'}} key={user.email} >{user.name} </p></li>
               )
@@ -512,19 +562,28 @@ const UpdatePool = () => {
         <tr>
           <th>#</th>
           <th>Name</th>
+          <th>Date</th>
           <th>Amount</th>
+          <th>Paid</th>
         </tr>
       </thead>
       <tbody>
         {duePayments && duePayments.length> 0 && 
           duePayments.map((payment, idx2)=>{
-            console.log(payment)
+        
             if(idx2<duePayments.length/2)
             return(
               <tr key={`${Math.floor(Math.random() * 1092)}`}>
               <td>{idx2}</td>
               <td>{payment.name}</td>
+              <td>{payment.date}</td>
               <td>{payment.amount}</td>
+              <td>
+              <ReactSwitch
+                checked={payment.paid}
+                onChange={(e)=>handleChangeDT(e, idx2)}
+              />
+              </td>
             </tr>
             )
           })
@@ -532,6 +591,7 @@ const UpdatePool = () => {
         
       </tbody>
     </Table>
+    <Button onClick={handleUpdateDP} style={{width:'250px',margin:'auto',display:'flex', justifyContent:'center' }} value="Submit"  > Update </Button>
       </div>
       <div className="card" style={{width:"60%", margin:'auto', marginTop:"2%", marginBottom:'1%', padding:'2% 8%'}}>
         <h4>Transactions</h4>
@@ -549,7 +609,7 @@ const UpdatePool = () => {
       <tbody>
         {transactions && transactions.length> 0 && 
           transactions.map((payment, idx)=>{
-            console.log(payment)
+            
             if(idx<transactions.length/2)
             return(
               <tr>
