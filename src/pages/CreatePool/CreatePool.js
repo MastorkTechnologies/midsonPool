@@ -28,7 +28,7 @@ const CreatePool = () => {
     users.map((user,idx)=>{
       selectedUsers.map((email, idx2)=>{
         if(user.email == email){
-          setNonPrizedUsers([...nonPrizedUsers, {email:user.email, name: user.name}])
+          setNonPrizedUsers((prev)=> [...prev, {email:user.email, name: user.name}])
         }
       })
     })
