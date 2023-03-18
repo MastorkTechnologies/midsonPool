@@ -10,6 +10,7 @@ import {
   setDoc,
   collection,
   getDoc,
+  FieldValue
 } from "firebase/firestore";
 
 import {
@@ -246,3 +247,22 @@ export const updateUserInDataBase=async(email,data,setIsloading)=>{
       setIsloading(false) 
     }
   }
+
+  export const getPoolIDs = async () => {
+    //let User;
+    const docRef = doc(db, "Meta", "POOL");
+    const docSnap = await getDoc(docRef);
+    //console.log(docSnap.data(), "docSnap");
+    return docSnap.data();
+  };
+
+  export const updatePoolIDs=async(id , previds)=>{
+    const userDocumentRef=doc(db,"Meta", "POOL")
+    var temp = [...previds, id]
+    try {
+      await updateDoc(userDocumentRef,{ids:temp})   
+  } catch (error) {
+      console.log(error.message)
+      toast.error("Something went wrong while adding the ID")
+  }
+}

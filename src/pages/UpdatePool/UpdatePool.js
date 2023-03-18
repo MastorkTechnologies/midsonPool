@@ -292,7 +292,7 @@ const UpdatePool = () => {
       var month = date.getMonth();
       month +=1;
       var d =`${year}-${month}-${day}`
-    setPool(pool.nonPrizedUsers=[...pool.nonPrizedUsers,{email:selectedNonPrizedFinanceUsers[0],date:d,amount:bidding}])
+    setPool(pool.nonPrizedFinanceUsers=[...pool.nonPrizedFinanceUsers,{email:selectedNonPrizedFinanceUsers[0],date:d,amount:bidding}])
    
     updatePoolUserDues(selectedNonPrizedFinanceUsers[0], {pool:pool.id, Amount:bidding, Paid:false, date:d})
     setPool(pool.duePayments=[...pool.duePayments,{email:selectedNonPrizedFinanceUsers, amount:bidding, paid:false, date:d}])

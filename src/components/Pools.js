@@ -40,7 +40,7 @@ const Pools = () => {
 
   return (
     <>
-    <h3 style={{margin:"auto", marginTop:'2%', textAlign:"center"}}>POOLS</h3>
+    <h3 style={{margin:"auto", marginTop:'2%', textAlign:"center"}}>Groups</h3>
     <div className="card" style={{width:"60%", margin:'auto', marginTop:"2%", marginBottom:'1%'}}>
     <ul className="list-group list-group-flush">
     {pools.length>0 && pools.map((pool,idx)=>{
@@ -48,7 +48,7 @@ const Pools = () => {
            
             <li className="list-group-item" >
             <Link style={{textDecoration:'none', color:'black' , textAlign:'center'}} to={`/updatePool/${pool.id}`} state={{ state:pool }} >
-            <h4 style={{cursor:'pointer'}} key={pool.id} > Pool Amount ₹{(pool.poolAmount/pool.totalMonth)/pool.totalMonth} <span style={{color:'lightgray'}} > #{pool.id}</span> </h4>
+            <h4 style={{cursor:'pointer'}} key={pool.id} > Group Amount ₹{((pool.poolAmount/pool.totalMonth)/pool.users.length).toFixed(2)} <span style={{color:'lightgray'}} > #{pool.id}</span> </h4>
             </Link>
             <div className="card" style={{width:"60%", margin:'auto', marginTop:"2%", marginBottom:'1%'}}>
             <ul className="list-group list-group-flush">
@@ -67,7 +67,7 @@ const Pools = () => {
     })}
      </ul>
     </div>
-    <Button className='btn-dark' style={{margin:'auto',display:'flex', justifyContent:'center' }} onClick={()=>navigate("/createPool")} >ADD NEW POOL</Button>
+    <Button className='btn-dark' style={{margin:'auto',display:'flex', justifyContent:'center' }} onClick={()=>navigate("/createPool")} >ADD NEW GROUP</Button>
     </>
   )
 }

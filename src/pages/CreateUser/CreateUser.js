@@ -38,7 +38,7 @@ const CreateUser = () => {
   return (
   <>
     <Navbar/>
-    <h3 style={{margin:"auto", textAlign:"center"}}>ADD USERS</h3>
+    <h3 style={{margin:"auto", textAlign:"center"}}>ADD MEMBER</h3>
     <div className="card" style={{width:"60%", margin:'auto', marginTop:"2%", marginBottom:'1%', padding:'2% 8%'}}>
     <Form  onSubmit={(e)=>submitHandler(e)}>
       <Form.Group className="mb-3">

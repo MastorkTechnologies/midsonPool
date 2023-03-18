@@ -20,7 +20,7 @@ const Users = () => {
 
   return (
     <>
-    <h3 style={{margin:"auto", textAlign:"center"}}>USERS</h3>
+    <h3 style={{margin:"auto", textAlign:"center"}}>Members</h3>
     <div className="card" style={{width:"60%", margin:'auto', marginTop:"2%", marginBottom:'1%'}}>
       <ul className="list-group list-group-flush">
       {users.length>0 && users.map((user,idx)=>{
@@ -31,7 +31,7 @@ const Users = () => {
       </ul>
     </div>
 
-    <Button className='btn-dark' style={{margin:'auto',display:'flex', justifyContent:'center' }} onClick={()=>navigate("/createUser")} >ADD USER</Button>
+    <Button className='btn-dark' style={{margin:'auto',display:'flex', justifyContent:'center' }} onClick={()=>navigate("/createUser")} >ADD NEW MEMBER</Button>
 
     </>
   )
