@@ -81,37 +81,37 @@ const CreatePool = () => {
 
     console.log(selectedUsers, temparr)
 
-    // var data = {
-    //     id:poolID,
-    //     poolAmount:poolAmount*totalMonths,
-    //     users:selectedUsers,
-    //     balance:0,
-    //     latePayers:[],
-    //     transactions:[],
-    //     prizedUsers:[],
-    //     prizedNotPaidUsers:[],
-    //     nonPrizedUsers:temparr,
-    //     nonPrizedFinanceUsers:[],
-    //     currentMonth:1,
-    //     bidding:[],
-    //     lastBidding:0,
-    //     startingDate,
-    //     totalMonth:totalMonths,
-    //     duePayments:[],
-    // }
-    // updatePoolIDs(poolID,ids)
-    // createPool(poolID, data)
-    // selectedUsers.map((email,idx)=>{
-    //   users.map((user, idx2)=>{
-    //     if(email == user.email){
-    //       var temp = {pools:[...user.pools,poolID]}
-    //       updatePoolUserGroup(email,temp)
-    //     }
-    //   })
-    // })
+    var data = {
+        id:poolID,
+        poolAmount:poolAmount*totalMonths,
+        users:selectedUsers,
+        balance:0,
+        latePayers:[],
+        transactions:[],
+        prizedUsers:[],
+        prizedNotPaidUsers:[],
+        nonPrizedUsers:temparr,
+        nonPrizedFinanceUsers:[],
+        currentMonth:1,
+        bidding:[],
+        lastBidding:0,
+        startingDate,
+        totalMonth:totalMonths,
+        duePayments:[],
+    }
+    updatePoolIDs(poolID,ids)
+    createPool(poolID, data)
+    selectedUsers.map((email,idx)=>{
+      users.map((user, idx2)=>{
+        if(email == user.email){
+          var temp = {pools:[...user.pools,poolID]}
+          updatePoolUserGroup(email,temp)
+        }
+      })
+    })
     
-    // toast.success("Pool Created!")
-    // setTimeout(resetForm, 3500);
+    toast.success("Pool Created!")
+    setTimeout(resetForm, 3500);
     
   }
 
