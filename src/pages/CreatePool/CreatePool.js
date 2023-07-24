@@ -28,15 +28,22 @@ const CreatePool = () => {
   },[])
 
   useEffect(()=>{
+    var arr = []
+    
+    nonPrizedUsers.length>0 && nonPrizedUsers.map((u)=>{
+      arr.push(u.email)
+    })
     users.map((user,idx)=>{
       selectedUsers.map((email, idx2)=>{
+        console.log((arr.includes(user.email)==false))
+        if(arr.includes(user.email)==false)
         if(user.email == email){
           setNonPrizedUsers((prev)=> [...prev, {email:user.email, name: user.name}])
+          arr.push(user.email)
         }
       })
     })
   },[selectedUsers])
-
   const intializeOptions = (arr)=>{
     var res =[];
     arr.map((user,idx)=>{
