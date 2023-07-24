@@ -318,15 +318,15 @@ const UpdatePool = () => {
     console.log(val, index);
     var temp = [];
     duePayments.map((item, idx)=>{
-      if(idx<duePayments.length/2){
+  
         temp[idx] = item;
         if(idx == index){
           temp[idx].paid = val;
         }
-      }
+      
     })
     console.log(duePayments[0])
-    setDuePayments([...temp,...temp])
+    setDuePayments([...temp])
     delete temp.name;
     var pooltemp = pool;
     pooltemp.duePayments = temp;
