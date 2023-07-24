@@ -27,23 +27,25 @@ const CreatePool = () => {
     intializeUsers();
   },[])
 
-  useEffect(()=>{
-    var arr = []
+  // useEffect(()=>{
+  //   var arr = []
     
-    nonPrizedUsers.length>0 && nonPrizedUsers.map((u)=>{
-      arr.push(u.email)
-    })
-    users.map((user,idx)=>{
-      selectedUsers.map((email, idx2)=>{
-        console.log((arr.includes(user.email)==false))
-        if(arr.includes(user.email)==false)
-        if(user.email == email){
-          setNonPrizedUsers((prev)=> [...prev, {email:user.email, name: user.name}])
-          arr.push(user.email)
-        }
-      })
-    })
-  },[selectedUsers])
+  //   nonPrizedUsers.length>0 && nonPrizedUsers.map((u)=>{
+  //     arr.push(u.email)
+  //   })
+  //   console.log("arr", arr)
+  //   users.map((user,idx)=>{
+  //     selectedUsers.map((email, idx2)=>{
+  //       console.log("current", user)
+  //       console.log((arr.includes(user.email)==false))
+  //       if(arr.includes(user.email)==false)
+  //       if(user.email == email){
+  //         setNonPrizedUsers((prev)=> [...prev, {email:user.email, name: user.name}])
+  //         arr.push(user.email)
+  //       }
+  //     })
+  //   })
+  // },[selectedUsers])
   const intializeOptions = (arr)=>{
     var res =[];
     arr.map((user,idx)=>{
@@ -69,38 +71,47 @@ const CreatePool = () => {
        return toast.error("Pool Amount , users or Starting Date cannot be empty!")
     }
     // var id = randomStr();
-
-    var data = {
-        id:poolID,
-        poolAmount:poolAmount*totalMonths,
-        users:selectedUsers,
-        balance:0,
-        latePayers:[],
-        transactions:[],
-        prizedUsers:[],
-        prizedNotPaidUsers:[],
-        nonPrizedUsers,
-        nonPrizedFinanceUsers:[],
-        currentMonth:1,
-        bidding:[],
-        lastBidding:0,
-        startingDate,
-        totalMonth:totalMonths,
-        duePayments:[],
-    }
-    updatePoolIDs(poolID,ids)
-    createPool(poolID, data)
-    selectedUsers.map((email,idx)=>{
-      users.map((user, idx2)=>{
-        if(email == user.email){
-          var temp = {pools:[...user.pools,poolID]}
-          updatePoolUserGroup(email,temp)
-        }
-      })
-    })
+    var temparr = [];
     
-    toast.success("Pool Created!")
-    setTimeout(resetForm, 3500);
+    users.map((u)=>{
+      if(selectedUsers.includes(u.email)){
+        temparr.push({email:u.email, name: u.name})
+      }
+    })
+
+    console.log(selectedUsers, temparr)
+
+    // var data = {
+    //     id:poolID,
+    //     poolAmount:poolAmount*totalMonths,
+    //     users:selectedUsers,
+    //     balance:0,
+    //     latePayers:[],
+    //     transactions:[],
+    //     prizedUsers:[],
+    //     prizedNotPaidUsers:[],
+    //     nonPrizedUsers:temparr,
+    //     nonPrizedFinanceUsers:[],
+    //     currentMonth:1,
+    //     bidding:[],
+    //     lastBidding:0,
+    //     startingDate,
+    //     totalMonth:totalMonths,
+    //     duePayments:[],
+    // }
+    // updatePoolIDs(poolID,ids)
+    // createPool(poolID, data)
+    // selectedUsers.map((email,idx)=>{
+    //   users.map((user, idx2)=>{
+    //     if(email == user.email){
+    //       var temp = {pools:[...user.pools,poolID]}
+    //       updatePoolUserGroup(email,temp)
+    //     }
+    //   })
+    // })
+    
+    // toast.success("Pool Created!")
+    // setTimeout(resetForm, 3500);
     
   }
 

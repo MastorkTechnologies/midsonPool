@@ -100,15 +100,19 @@ const UpdatePool = () => {
     }
   }
   const getnonprizedUserDetails = (data)=>{
-    if(data?.nonPrizedUsers.length>0){
-      data.nonPrizedUsers.map((item,idx)=>{
-        data.usersAllData.map((user, idx2)=>{
-          if(item.email == user.email){
-            setNonPrizedUserDetails((nonPrizedUserDetails)=> [...nonPrizedUserDetails, {email:item.email, name:user.name}])
-          }
-        })
-      })
-    }
+    // if(data?.nonPrizedUsers.length>0){
+    //   data.nonPrizedUsers.map((item,idx)=>{
+    //     data.usersAllData.map((user, idx2)=>{
+    //       if(item.email == user.email){
+    //         setNonPrizedUserDetails((nonPrizedUserDetails)=> [...nonPrizedUserDetails, {email:item.email, name:user.name}])
+    //       }
+    //     })
+    //   })
+    // }
+    if(data)
+    setNonPrizedUserDetails([...data.nonPrizedUsers])
+
+    console.log( [...data.nonPrizedUsers])
   }
   const getprizedNotPaidUserDetails = (data)=>{
     if(data.prizedNotPaidUsers.length>0){
@@ -184,11 +188,11 @@ const UpdatePool = () => {
     setPool(pool.lastBidding=bidding)
     var temparr = [];
     pool.nonPrizedUsers.map((user,idx)=>{
-      selectedPrizedUsers.map((email,idx2)=>{
-        if(email != user.email){
-          temparr = [...temparr, user]
-        }
-      })
+      if(selectedPrizedUsers.includes(user.email)==false){
+       
+        temparr = [...temparr, user]
+        
+      }
     })
     setPool(pool.nonPrizedUsers=temparr);
    
@@ -237,11 +241,11 @@ const UpdatePool = () => {
     setPool(pool.lastBidding=bidding)
     var temparr = [];
     pool.nonPrizedUsers.map((user,idx)=>{
-      selectedPrizedUsers.map((email,idx2)=>{
-        if(email != user.email){
-          temparr = [...temparr, user]
-        }
-      })
+      if(selectedPrizedUsers.includes(user.email)==false){
+       
+        temparr = [...temparr, user]
+        
+      }
     })
     setPool(pool.nonPrizedUsers=temparr);
     setPool(pool.balance=pool.balance-bidding);
@@ -400,7 +404,7 @@ const UpdatePool = () => {
           <div className="card" style={{ margin:'auto', marginTop:"2%", marginBottom:'1%'}}>
             <ul className="list-group list-group-flush">
             {prizedUserDetails && prizedUserDetails.length>0 ? prizedUserDetails.map((item,idx2)=>{
-              if(idx2<prizedUserDetails.length/2)
+          
               return (
                 <li style={{width:"220px"}} className="list-group-item"> <p  style={{cursor:'pointer', textTransform:'capitalize'}} key={`${item.email} pu`} >{item.name} {item.amount} </p></li>
               )
@@ -446,7 +450,7 @@ const UpdatePool = () => {
           <div className="card" style={{ margin:'auto', marginTop:"2%", marginBottom:'1%'}}>
             <ul className="list-group list-group-flush">
             {nonPrizedUserDetails && nonPrizedUserDetails.length>0 ? nonPrizedUserDetails.map((item,idx2)=>{
-              if(idx2<nonPrizedUserDetails.length/2)
+             
               return (
                 <li style={{width:"220px"}} className="list-group-item"> <p  style={{cursor:'pointer', textTransform:'capitalize'}} key={`${item.email} npu`} >{item.name}</p></li>
               )
@@ -464,7 +468,7 @@ const UpdatePool = () => {
           <div className="card" style={{ margin:'auto', marginTop:"2%", marginBottom:'1%'}}>
             <ul className="list-group list-group-flush">
             {prizedNotPaidUsersDetails && prizedNotPaidUsersDetails.length>0 ? prizedNotPaidUsersDetails.map((item,idx2)=>{
-              if(idx2<prizedNotPaidUsersDetails.length/2)
+              
               return (
                 <li style={{width:"220px"}} className="list-group-item"> <p  style={{cursor:'pointer', textTransform:'capitalize'}} key={`${item.email} pnpu`} >{item.name} {item.amount} </p></li>
               )
@@ -511,7 +515,7 @@ const UpdatePool = () => {
           <div className="card" style={{ margin:'auto', marginTop:"2%", marginBottom:'1%'}}>
             <ul className="list-group list-group-flush">
             {nonPrizedFinanceUserDetails && nonPrizedFinanceUserDetails.length>0 ? nonPrizedFinanceUserDetails.map((item,idx2)=>{
-              if(idx2<nonPrizedFinanceUserDetails.length/2)
+             
               return (
                 <li style={{width:"220px"}} className="list-group-item"> <p  style={{cursor:'pointer', textTransform:'capitalize'}} key={`${item.email} npfu`} >{item.name} {item.amount} </p></li>
               )
@@ -571,7 +575,7 @@ const UpdatePool = () => {
         {duePayments && duePayments.length> 0 && 
           duePayments.map((payment, idx2)=>{
         
-            if(idx2<duePayments.length/2)
+           
             return(
               <tr key={`${Math.floor(Math.random() * 1092)}`}>
               <td>{idx2}</td>
@@ -610,7 +614,7 @@ const UpdatePool = () => {
         {transactions && transactions.length> 0 && 
           transactions.map((payment, idx)=>{
             
-            if(idx<transactions.length/2)
+            if(idx<transactions.length)
             return(
               <tr>
               <td>{idx}</td>
